@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: lys-bot
+    container_name: ${PROJECT_NAME:-lys-bot}
     restart: unless-stopped
     env_file:
       - .env
@@ -14,5 +14,5 @@ services:
 
 networks:
   bot-network:
-    name: lys-bot-net
+    name: ${PROJECT_NAME:-lys-bot}-net
     driver: bridge
