@@ -23,11 +23,12 @@ class DiscordBot extends Client {
   rest_application_commands_array = [];
   login_attempts = 0;
   login_timestamp = 0;
-  statusMessages = [
+  statusMessages = config.status || [
     { name: 'Status 1', type: 4 },
     { name: 'Status 2', type: 4 },
     { name: 'Status 3', type: 4 },
   ];
+  statusRotationInterval = config.status_rotation_interval || 4000;
 
   commands_handler = new CommandsHandler(this);
   components_handler = new ComponentsHandler(this);
@@ -64,7 +65,7 @@ class DiscordBot extends Client {
     setInterval(() => {
       this.user.setPresence({ activities: [this.statusMessages[index]] });
       index = (index + 1) % this.statusMessages.length;
-    }, 4000);
+    }, this.statusRotationInterval);
   };
 
   connect = async () => {

@@ -6,6 +6,12 @@ const config = {
     enabled: false, // If true, the bot will register all application commands to a specific guild (not globally).
     guildId: 'Your bot development guild ID',
   },
+  status: [
+    { name: 'Status 1', type: 4 },
+    { name: 'Status 2', type: 4 },
+    { name: 'Status 3', type: 4 },
+  ],
+  status_rotation_interval: 4000,
   commands: {
     prefix: '?', // For message commands, prefix is required. This can be changed by a database.
     message_commands: true, // If true, the bot will allow users to use message (or prefix) commands.
