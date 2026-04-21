@@ -35,25 +35,34 @@ class CommandsHandler {
               continue;
             }
 
-            this.client.collection.message_commands.set(module.command.name, module);
+            if (this.client.collection.message_commands.has(module.command.name)) {
+              info('Skipped duplicate message command: ' + module.command.name + ' (' + file + ')');
+            } else {
+              this.client.collection.message_commands.set(module.command.name, module);
 
-            if (module.command.aliases && Array.isArray(module.command.aliases)) {
-              module.command.aliases.forEach(alias => {
-                this.client.collection.message_commands_aliases.set(alias, module.command.name);
-              });
+              if (module.command.aliases && Array.isArray(module.command.aliases)) {
+                module.command.aliases.forEach(alias => {
+                  this.client.collection.message_commands_aliases.set(alias, module.command.name);
+                });
+              }
+
+              info('Loaded new message command: ' + file);
             }
-
-            info('Loaded new message command: ' + file);
           } else if (module.__type__ === 1) {
             if (!module.command || !module.run) {
               error('Unable to load the application command ' + file);
               continue;
             }
 
-            this.client.collection.application_commands.set(module.command.name, module);
-            this.client.rest_application_commands_array.push(module.command);
-
-            info('Loaded new application command: ' + file);
+            if (this.client.collection.application_commands.has(module.command.name)) {
+              info(
+                'Skipped duplicate application command: ' + module.command.name + ' (' + file + ')'
+              );
+            } else {
+              this.client.collection.application_commands.set(module.command.name, module);
+              this.client.rest_application_commands_array.push(module.command);
+              info('Loaded new application command: ' + file);
+            }
           } else {
             error('Invalid command type ' + module.__type__ + ' from command file ' + file);
           }
