@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: ["main", "develop"]
+    branches: ["main", "dev"]
   pull_request:
-    branches: ["main", "develop"]
+    branches: ["main", "dev"]
 
 jobs:
   # ==========================================
@@ -51,37 +51,52 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
       - name: Determine Environment (Dev/Prod)
         id: setup_env
         run: |
           # Define Docker project name based on the target branch
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "PROJECT_NAME=bot-prod" >> $GITHUB_ENV
+            echo "DEPLOY_DIR=~/deploy-prod" >> $GITHUB_ENV
           else
             echo "PROJECT_NAME=bot-dev" >> $GITHUB_ENV
+            echo "DEPLOY_DIR=~/deploy-dev" >> $GITHUB_ENV
           fi
 
-      - name: Generate .env File from GitHub Secrets
+      - name: Prepare Deployment Directory
         run: |
-          # Remove old .env file if it exists in the _work directory
-          rm -f .env
+          # Create the deployment directory on the Mini PC if it doesn't exist
+          mkdir -p ${{ env.DEPLOY_DIR }}
 
-          # Inject secrets depending on the environment
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.DEPLOY_DIR }}
+
+      - name: Inject Secrets as Environment Variables
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: |
+          # Clean up old files
+          rm -f .env
+          rm -f src/config.js
+
+          # Generate .env with all secrets
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN_PROD }}" >> .env
-            echo "NODE_ENV=production" >> .env
+            cat <<EOF > .env
+          CLIENT_TOKEN=${{ secrets.DISCORD_TOKEN_PROD }}
+          NODE_ENV=production
+          EOF
           else
-            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN_DEV }}" >> .env
-            echo "NODE_ENV=development" >> .env
+            cat <<EOF > .env
+          CLIENT_TOKEN=${{ secrets.DISCORD_TOKEN_DEV }}
+          NODE_ENV=development
+          EOF
           fi
 
-          # Example of adding common variables
-          # echo "TZ=Asia/Ho_Chi_Minh" >> .env
+          cp src/example.config.js src/config.js
 
       - name: Deploy with Docker Compose
+        working-directory: ${{ env.DEPLOY_DIR }}
         run: |
           # -p isolates the environments (bot-dev vs bot-prod)
           # --build forces Docker to re-package the code into a new image
