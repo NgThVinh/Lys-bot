@@ -1,0 +1,9 @@
+node_modules
+.git
+.husky
+.github
+.env
+src/config.js
+database.yml
+terminal.log
+*.log

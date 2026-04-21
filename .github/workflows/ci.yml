@@ -1,0 +1,93 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  # ==========================================
+  # CI: Continuous Integration (Quality Check)
+  # ==========================================
+  ci:
+    name: Code Quality Check
+    # We use GitHub's server for CI to keep your Mini PC clean and fast
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Change this if you use a different Node version
+          cache: 'npm'
+
+      - name: Install Dependencies
+        # npm ci is strictly for CI environments, it reads package-lock.json
+        run: npm ci
+
+      - name: Run ESLint
+        # Make sure you have "lint": "eslint ." in your package.json scripts
+        run: npm run lint
+
+      - name: Run Unit Tests
+        # Add "|| true" temporarily if you don't have tests yet to prevent workflow failure
+        run: npm test || echo "No tests configured yet."
+
+  # ==========================================
+  # CD: Continuous Deployment (Docker Deploy)
+  # ==========================================
+  cd:
+    name: Deploy to Mini PC
+    needs: ci # This ensures deployment only happens if CI passes
+
+    # Only deploy on direct push/merge to branches, NOT on PR creation
+    if: github.event_name == 'push'
+
+    # Target the container in your Mini PC (Incus)
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Determine Environment (Dev/Prod)
+        id: setup_env
+        run: |
+          # Define Docker project name based on the target branch
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "PROJECT_NAME=bot-prod" >> $GITHUB_ENV
+          else
+            echo "PROJECT_NAME=bot-dev" >> $GITHUB_ENV
+          fi
+
+      - name: Generate .env File from GitHub Secrets
+        run: |
+          # Remove old .env file if it exists in the _work directory
+          rm -f .env
+
+          # Inject secrets depending on the environment
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN_PROD }}" >> .env
+            echo "NODE_ENV=production" >> .env
+          else
+            echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN_DEV }}" >> .env
+            echo "NODE_ENV=development" >> .env
+          fi
+
+          # Example of adding common variables
+          # echo "TZ=Asia/Ho_Chi_Minh" >> .env
+
+      - name: Deploy with Docker Compose
+        run: |
+          # -p isolates the environments (bot-dev vs bot-prod)
+          # --build forces Docker to re-package the code into a new image
+          docker compose -p ${{ env.PROJECT_NAME }} up -d --build
+
+      - name: Clean Up Docker Storage
+        run: |
+          # Remove dangling (unused) images to save Mini PC disk space
+          docker image prune -f

@@ -5,10 +5,19 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ."
+    "start": "node .",
+    "prepare": "husky install",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "keywords": [],
-  "author": "TFAGaming",
+  "author": "NgThVinh",
   "license": "GPL-3.0",
   "dependencies": {
     "colors": "^1.4.0",
@@ -16,5 +25,13 @@
     "discordjs-v14-bot-template": "file:",
     "dotenv": "^16.4.5",
     "quick-yaml.db": "^1.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^10.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "husky": "^8.0.0",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3"
   }
 }
