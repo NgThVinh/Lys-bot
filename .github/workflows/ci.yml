@@ -76,24 +76,28 @@ jobs:
       - name: Inject Secrets as Environment Variables
         working-directory: ${{ env.DEPLOY_DIR }}
         run: |
-          # Clean up old files
+          # Clean up old .env
           rm -f .env
-          rm -f src/config.js
 
-          # Generate .env with all secrets
+          # Generate .env with all required env vars
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             cat <<EOF > .env
           CLIENT_TOKEN=${{ secrets.DISCORD_TOKEN_PROD }}
           NODE_ENV=production
+          BOT_OWNER_ID=${{ secrets.BOT_OWNER_ID }}
+          BOT_DEVELOPER_IDS=${{ secrets.BOT_DEVELOPER_IDS }}
+          DEV_MODE=false
           EOF
           else
             cat <<EOF > .env
           CLIENT_TOKEN=${{ secrets.DISCORD_TOKEN_DEV }}
           NODE_ENV=development
+          BOT_OWNER_ID=${{ secrets.BOT_OWNER_ID }}
+          BOT_DEVELOPER_IDS=${{ secrets.BOT_DEVELOPER_IDS }}
+          DEV_MODE=${{ secrets.DEV_MODE }}
+          DEV_GUILD_ID=${{ secrets.DEV_GUILD_ID }}
           EOF
           fi
-
-          cp src/example.config.js src/config.js
 
       - name: Deploy with Docker Compose
         working-directory: ${{ env.DEPLOY_DIR }}
