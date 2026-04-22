@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const ApplicationCommand = require('../../structure/ApplicationCommand');
 
 module.exports = new ApplicationCommand({
@@ -14,6 +14,7 @@ module.exports = new ApplicationCommand({
         required: true,
       },
     ],
+    defaultMemberPermissions: PermissionFlagsBits.ManageMessages,
   },
   options: {
     cooldown: 5000,

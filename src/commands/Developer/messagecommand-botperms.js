@@ -1,30 +1,21 @@
 const { EmbedBuilder } = require('discord.js');
-const ApplicationCommand = require('../../structure/ApplicationCommand');
+const MessageCommand = require('../../structure/MessageCommand');
 
-module.exports = new ApplicationCommand({
+module.exports = new MessageCommand({
   command: {
     name: 'botperms',
     description: 'Check bot permissions in a channel',
-    type: 1,
-    options: [
-      {
-        name: 'channel',
-        description: 'The channel to check (defaults to current channel)',
-        type: 7,
-        required: false,
-      },
-    ],
   },
   options: {
     botOwner: true,
     cooldown: 5000,
   },
-  run: async (client, interaction) => {
-    const channel = interaction.options.getChannel('channel') || interaction.channel;
+  run: async (client, message, args) => {
+    const channel = message.mentions.channels.first() || message.channel;
     const botMember = channel.guild.members.cache.get(client.user.id);
 
     if (!botMember) {
-      await interaction.reply({ content: 'Bot is not in this channel.', flags: 64 });
+      await message.reply('Bot is not in this channel.');
       return;
     }
 
@@ -67,6 +58,6 @@ module.exports = new ApplicationCommand({
         }
       );
 
-    await interaction.reply({ embeds: [embed] });
+    await message.reply({ embeds: [embed] });
   },
 }).toJSON();

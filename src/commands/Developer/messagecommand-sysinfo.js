@@ -1,19 +1,17 @@
 const { EmbedBuilder } = require('discord.js');
-const ApplicationCommand = require('../../structure/ApplicationCommand');
+const MessageCommand = require('../../structure/MessageCommand');
 const os = require('os');
 
-module.exports = new ApplicationCommand({
+module.exports = new MessageCommand({
   command: {
     name: 'sysinfo',
     description: 'Displays system information',
-    type: 1,
-    options: [],
   },
   options: {
     botOwner: true,
     cooldown: 5000,
   },
-  run: async (client, interaction) => {
+  run: async (client, message, args) => {
     const totalMem = (os.totalmem() / 1e9).toFixed(2);
     const freeMem = (os.freemem() / 1e9).toFixed(2);
     const usedMem = (totalMem - freeMem).toFixed(2);
@@ -36,7 +34,7 @@ module.exports = new ApplicationCommand({
       { name: 'Node.js', value: process.version, inline: true }
     );
 
-    await interaction.reply({ embeds: [embed] });
+    await message.reply({ embeds: [embed] });
   },
 }).toJSON();
 
