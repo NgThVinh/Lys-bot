@@ -82,7 +82,7 @@ jobs:
           # Generate .env with all required env vars
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             cat <<EOF > .env
-          CLIENT_TOKEN=${{ secrets.DISCORD_TOKEN_PROD }}
+          CLIENT_TOKEN=${{ secrets.CLIENT_TOKEN_PROD }}
           NODE_ENV=production
           BOT_OWNER_ID=${{ secrets.BOT_OWNER_ID }}
           BOT_DEVELOPER_IDS=${{ secrets.BOT_DEVELOPER_IDS }}
@@ -90,11 +90,11 @@ jobs:
           EOF
           else
             cat <<EOF > .env
-          CLIENT_TOKEN=${{ secrets.DISCORD_TOKEN_DEV }}
+          CLIENT_TOKEN=${{ secrets.CLIENT_TOKEN_DEV }}
           NODE_ENV=development
           BOT_OWNER_ID=${{ secrets.BOT_OWNER_ID }}
           BOT_DEVELOPER_IDS=${{ secrets.BOT_DEVELOPER_IDS }}
-          DEV_MODE=${{ secrets.DEV_MODE }}
+          DEV_MODE=true
           DEV_GUILD_ID=${{ secrets.DEV_GUILD_ID }}
           EOF
           fi
