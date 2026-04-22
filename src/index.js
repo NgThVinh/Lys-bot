@@ -1,4 +1,7 @@
 require('dotenv').config();
+BigInt.prototype.toJSON = function () {
+  return this.toString();
+};
 const fs = require('fs');
 const DiscordBot = require('./client/DiscordBot');
 
