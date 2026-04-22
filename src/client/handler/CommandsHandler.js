@@ -98,6 +98,12 @@ class CommandsHandler {
     );
 
     if (development.enabled) {
+      info('Dev mode active — clearing global commands first...');
+      const globalCommands = await rest.get(Routes.applicationCommands(this.client.user.id));
+      for (const cmd of globalCommands) {
+        await rest.delete(Routes.applicationCommand(this.client.user.id, cmd.id));
+      }
+      info('Global commands cleared. Registering to dev guild: ' + development.guildId);
       await rest.put(Routes.applicationGuildCommands(this.client.user.id, development.guildId), {
         body: this.client.rest_application_commands_array,
       });
