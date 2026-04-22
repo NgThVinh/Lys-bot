@@ -7,6 +7,14 @@ const ComponentsHandler = require('./handler/ComponentsHandler');
 const ComponentsListener = require('./handler/ComponentsListener');
 const EventsHandler = require('./handler/EventsHandler');
 const { QuickYAML } = require('quick-yaml.db');
+const fs = require('fs');
+const path = require('path');
+
+if (!fs.existsSync(config.database.path)) {
+  const dir = path.dirname(config.database.path);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(config.database.path, '# Database file - auto-generated\n---\n{}\n');
+}
 
 class DiscordBot extends Client {
   collection = {
