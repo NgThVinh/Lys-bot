@@ -1,6 +1,6 @@
 const config = {
   database: {
-    path: './database.yml', // The database path.
+    path: '/tmp/database.yml', // The database path.
   },
   development: {
     enabled: process.env.DEV_MODE === 'true', // If true, the bot will register all application commands to a specific guild (not globally).
