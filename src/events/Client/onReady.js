@@ -2,7 +2,7 @@ const { success } = require('../../utils/Console');
 const Event = require('../../structure/Event');
 
 module.exports = new Event({
-  event: 'clientReady',
+  event: 'ready',
   once: true,
   run: (__client__, client) => {
     success(

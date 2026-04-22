@@ -61,7 +61,6 @@ class CommandsListener {
         ) {
           await message.reply({
             content: config.messages.MISSING_PERMISSIONS,
-            flags: MessageFlags.Ephemeral,
           });
 
           return;
