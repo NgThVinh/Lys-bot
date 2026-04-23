@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node .",
+    "dev": "node .",
     "prepare": "husky install",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
@@ -20,6 +21,7 @@
   "author": "NgThVinh",
   "license": "GPL-3.0",
   "dependencies": {
+    "canvas": "^3.2.3",
     "colors": "^1.4.0",
     "discord.js": "^14.25.0",
     "discordjs-v14-bot-template": "file:",

@@ -1,7 +1,14 @@
 require('dotenv').config();
-BigInt.prototype.toJSON = function () {
-  return this.toString();
-};
+if (typeof BigInt.prototype.toJSON !== 'function') {
+  Object.defineProperty(BigInt.prototype, 'toJSON', {
+    value: function () {
+      return this.toString();
+    },
+    writable: true,
+    configurable: true,
+    enumerable: false,
+  });
+}
 const fs = require('fs');
 const DiscordBot = require('./client/DiscordBot');
 
