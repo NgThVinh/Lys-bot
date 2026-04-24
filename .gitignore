@@ -4,3 +4,4 @@ node_modules
 .env
 database.yml
 terminal.log
+.github/workflows/docker-publish.yml

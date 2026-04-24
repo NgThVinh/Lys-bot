@@ -3,7 +3,19 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --ignore-scripts
+RUN apk add --no-cache \
+    build-base \
+    g++ \
+    cairo-dev \
+    pango-dev \
+    giflib-dev \
+    pixman-dev \
+    pangomm-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    python3
+
+RUN npm install
 
 COPY . .
 
